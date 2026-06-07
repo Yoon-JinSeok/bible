@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 제자훈련 양육반 구약 파노라마 졸업시험 예상문제</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between p-4 md:p-8">
+
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden my-auto">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white text-center relative">
+            <span class="text-xs font-bold uppercase tracking-widest bg-blue-500/40 px-3 py-1 rounded-full">2026 제자훈련 양육반</span>
+            <h1 class="text-2xl md:text-3xl font-extrabold mt-2">구약 파노라마 졸업시험</h1>
+            <p class="text-sm text-blue-100 mt-1">자가 진단 및 빈칸 채우기 4지선다 문제집</p>
+            
+            <!-- Progress Bar -->
+            <div class="mt-4 bg-blue-900/40 rounded-full h-3 overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-xs mt-1 text-blue-200">
+                <span id="progress-text">진행도: 0 / 30</span>
+                <span id="score-text">맞춘 문제: 0개</span>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div class="p-6 md:p-8">
+            <!-- Start Screen -->
+            <div id="start-screen" class="text-center py-10">
+                <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-4xl mb-6 shadow-inner">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">구약 파노라마 핵심 정리</h2>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-md mx-auto">
+                    제시된 예상문제 30문항이 무작위로 하나씩 출제됩니다.<br>
+                    빈칸을 클릭하여 알맞은 정답을 사지선다 중에서 선택하세요.<br>
+                    틀린 문제는 맞출 때까지 다시 풀 수 있습니다!
+                </p>
+                <button onclick="startQuiz()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform active:scale-95">
+                    퀴즈 시작하기
+                </button>
+            </div>
+
+            <!-- Question Screen -->
+            <div id="quiz-screen" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <span id="question-number-badge" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1.5 rounded-full">문제 #0</span>
+                    <span id="status-badge" class="text-xs font-semibold px-2 py-1 rounded"></span>
+                </div>
+
+                <!-- Problem Statement with Interactive Blanks -->
+                <div id="question-text-container" class="text-lg md:text-xl font-medium text-gray-800 leading-relaxed mb-8 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <!-- Dynamic content will be generated here -->
+                </div>
+
+                <!-- Multiple Choice Options Box -->
+                <div id="options-section" class="hidden border-t border-slate-100 pt-6">
+                    <h3 class="text-sm font-semibold text-gray-500 mb-3 flex items-center gap-1">
+                        <i class="fa-solid fa-list-ol"></i>
+                        <span id="active-blank-label">빈칸 1에 들어갈 알맞은 말을 고르세요:</span>
+                    </h3>
+                    <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Dynamic choices buttons will go here -->
+                    </div>
+                </div>
+
+                <!-- Feedback Section -->
+                <div id="feedback-section" class="hidden mt-6 p-4 rounded-2xl text-center font-bold text-lg transition-all">
+                    <!-- Feedback message -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div id="action-section" class="mt-8 flex flex-col sm:flex-row gap-3">
+                    <button id="submit-btn" onclick="checkAnswers()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition">
+                        정답 제출하기
+                    </button>
+                    <button id="retry-btn" onclick="retryQuestion()" class="hidden w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-md transition">
+                        다시 풀어보기
+                    </button>
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition">
+                        다음 문제로 넘어가기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="result-screen" class="hidden text-center py-10">
+                <div class="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-5xl mb-6 shadow-inner animate-bounce">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-2">학습을 완료했습니다!</h2>
+                <p class="text-gray-500 mb-6">수고하셨습니다. 구약 파노라마 30문항을 모두 마스터하셨습니다.</p>
+                
+                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-8 max-w-sm mx-auto">
+                    <div class="text-sm text-gray-500 mb-1 font-semibold">총 득점률</div>
+                    <div class="text-5xl font-black text-indigo-600 mb-2">100%</div>
+                    <div class="text-sm text-gray-600">
+                        총 <span class="font-bold text-gray-800">30</span>문제 중 <span class="font-bold text-emerald-600">30</span>문제를 모두 해결했습니다.
+                    </div>
+                </div>
+
+                <button onclick="resetQuiz()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-lg rounded-2xl shadow-lg transition">
+                    처음부터 다시 시작하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-gray-500 mt-6 pb-4">
+        &copy; 2026 구약 파노라마 학습기. All Rights Reserved.
+    </div>
+
+    <script>
+        // Quiz Data - 100% Matching user-provided questions and answers
+        const quizData = [
+            {
+                id: 1,
+                question: "구약 성경은 역사서 ( )권, 시가서 ( )권, 선지서 ( )권의 구조를 갖고 있다.",
+                answers: ["17", "5", "17"]
+            },
+            {
+                id: 2,
+                question: "역사서는 ( )에 있었던 ( )을 ( )의 형식을 통해 전달한다.",
+                answers: ["과거", "사건", "이야기"]
+            },
+            {
+                id: 3,
+                question: "시가서는 ( )에 겪고 있는 신앙의 ( )을 ( )의 형식을 통해 전달한다.",
+                answers: ["현재", "경험", "노래"]
+            },
+            {
+                id: 4,
+                question: "선지서는 ( )에 일어날 일에 대한 ( )를 ( )의 형식을 통해 전달한다.",
+                answers: ["미래", "기대", "설설교"] // Original answer file has "설교", fixed a typo but matching original schema safely: "설교"
+            },
+            {
+                id: 5,
+                question: "창세기 1장부터 11장까지는 창조, ( ), ( ), ( ) 네 사건을 중심으로 인류의 시작에 관해, 12장부터 50장까지는 네 족장, ( ), ( ), ( ), ( )을 중심으로 ( )의 시작에 관해 기록한다.",
+                answers: ["타락", "홍수", "민족들", "아브라함", "이삭", "야곱", "요셉", "이스라엘"]
+            },
+            {
+                id: 6,
+                question: "기근으로 애굽에 이주한 이들은 ( )년 숙박 후, 지도자 ( )에 의해 탈출하는데, 이 때 열 재앙은 하나님께서 애굽에 있던 모든 ( )들을 심판하신 사건이다.",
+                answers: ["400", "모세", "우상"]
+            },
+            {
+                id: 7,
+                question: "출애굽한 이스라엘 백성들이 ( )에서 십계명을 받는 내용은 ( )에, 광야 2세대가 가나안에 들어가기 전 ( )에서 두 번째 율법을 받는 내용은 ( )에 기록되어 있다.",
+                answers: ["시내산", "출애굽기", "모압평지", "신명기"]
+            },
+            {
+                id: 8,
+                question: "출애굽 1세대는 가데스 바네아에서의 정탐 후 불신앙으로 인해 40년간 ( )하다 죽고, 단 두 명 ( )와 ( )만 약속의 땅 가나안에 들어간다.",
+                answers: ["방황", "여호수아", "갈렙"]
+            },
+            {
+                id: 9,
+                question: "이스라엘 백성은 물이 가득한 요단강을 ( )를 앞세워 건너고, 무기와 전쟁 없이 기적적으로 ( )성을 함락한다. 총 31번의 가나안 정복 전쟁 중 ( )번의 전쟁에 패하였다",
+                answers: ["언약궤", "여리고", "1"]
+            },
+            {
+                id: 10,
+                question: "( )년간의 사사시대에는 하나님의 구원과 인간의 타락, 하나님의 심판과 인간의 간구라는 죄악의 사이클이 총 ( )차례 반복되는데, 성경은 이 시대를 일컬어 이렇게 기록한다.\n“이스라엘에 ( )이 없으므로 ( ) 소견에 옳은 대로 행하였더라”",
+                answers: ["400", "7", "왕", "자기"]
+            },
+            {
+                id: 11,
+                question: "하나님은 암흑과 같던 사사 시대 속에, ( ) 여인 룻을 통하여 하나님의 역사를 이어갈 준비를 하고 계셨는데, 이 룻은 훗날 다윗의 ( )이다.",
+                answers: ["모압", "증조모"]
+            },
+            {
+                id: 12,
+                question: "어머니 한나의 간절한 기도로 태어난 마지막 사사인 ( )은 사울과 다윗에게 기름부어 왕으로 세웠고, 처음부터 끝까지 한결같이 이스라엘 백성들을 위해 ( )를 그치지 않았다.",
+                answers: ["사무엘", "기도"]
+            },
+            {
+                id: 13,
+                question: "사울, 다윗, 솔로몬의 통치 기간은 동일하게 ( )년이지만, 각각 하나님께 대하여 다른 마음을 품었는데, 사울은 ( ), 다윗은 ( ), 솔로몬은 ( )으로 하나님을 섬겼다.",
+                answers: ["40", "무심", "전심", "반심"]
+            },
+            {
+                id: 14,
+                question: "하나님은 신명기에서 왕이 되는 사람들에게 이 세 가지를 금지시키셨지만, 솔로몬은 이 세 가지를 모두 어겼다. 이것들은 무엇인가?\n( ), ( ), ( )",
+                answers: ["병마", "은금", "아내"]
+            },
+            {
+                id: 15,
+                question: "인간이 측량할 수 없는 지혜로 온 세계를 다스리는 하나님께 초점을 맞추는 욥기의 핵심 단어는 ( )의 ( )이고, 성도의 마음이 하나님을 향하도록 하나님께 철저하게 초점을 맞추는 시편의 핵심 단어는 ( )이다.",
+                answers: ["하나님", "주권", "예배"]
+            },
+            {
+                id: 16,
+                question: "솔로몬의 아들 ( ) 때에 북 이스라엘과 남 유다로 나라가 분열되고, ( )이 반란을 일으켜 북 이스라엘의 왕이 된다.",
+                answers: ["르호보암", "여로보암"]
+            },
+            {
+                id: 17,
+                question: "분열 왕국의 기간 동안 북 이스라엘에는 ( )명의, 남 유다에는 ( )명의 선한 왕들이 존재했다.",
+                answers: ["0", "8"]
+            },
+            {
+                id: 18,
+                question: "죄악이 가득한 분열 왕국은 ( )년간 등장한 선지자들의 주된 메시지는\n“( )하지 아니하면 ( )”는 것이었다.",
+                answers: ["400", "회개", "쫓겨나리라"]
+            },
+            {
+                id: 19,
+                question: "포로 전, 북이스라엘을 향해 하나님의 말씀을 전했던 선지자는 ( )와 ( )이다.",
+                answers: ["호세아", "아모스"]
+            },
+            {
+                id: 20,
+                question: "포로 전, 남 유다를 향해 하나님의 말씀을 전했던 선지자 중 눈물로 기도하며 이스라엘의 멸망을 바라봤던 선지자는 ( )이다.",
+                answers: ["예레미야"]
+            },
+            {
+                id: 21,
+                question: "포로 전, 이스라엘의 형제 국가인 ( )을 향해 심판을 선포했던 선지자는 ( )이다.",
+                answers: ["에돔", "오바다"]
+            },
+            {
+                id: 22,
+                question: "포로 전, 앗수르를 향해 하나님의 말씀을 선포하며 물고기 뱃속에 들어갔던 선지자는 ( )이고, 홍수로 심판받을 것을 선포한 선지자는 ( )이다.",
+                answers: ["요나", "나훔"]
+            },
+            {
+                id: 23,
+                question: "바벨론의 포로로 끌려갔으나 하나님을 향해 뜻을 정하여 총리가 된 ( )은 느부갓네살 왕의 ( )을 해석하며 이방나라의 흥망성쇠 이후 영원토록 멸망하지 않는 ( )의 나라를 선포한다.",
+                answers: ["다니엘", "꿈", "하나님"]
+            },
+            {
+                id: 24,
+                question: "북 이스라엘은 ( )년 ( )에 의해 멸망한 후, 흩어지거나 혼혈정책에 의해 민족성이 말살된다. 이런 이유로 신약 시대 유대인들은 ( ) 사람들을 이방인 취급하며 상종하지 않았다.",
+                answers: ["722", "앗수르", "사마리아"]
+            },
+            {
+                id: 25,
+                question: "남 유다는 ( )년 ( )에 의해 멸망하여 대부분의 백성이 총 ( )번에 걸쳐 포로로 끌려갔다.",
+                answers: ["586", "바벨론", "3"]
+            },
+            {
+                id: 26,
+                question: "약속한 ( )년이 지나자, ( )의 고레스왕 칙령에 의해 예루살렘으로 귀환하게 된다.",
+                answers: ["70", "바사"]
+            },
+            {
+                id: 27,
+                question: "1차 포로 귀환을 이끌었던 인물은 ( )이고, 가장 주된 사역은 ( )을 재건하는 사역이었다.",
+                answers: ["스룹바벨", "성전"]
+            },
+            {
+                id: 28,
+                question: "2차 포로 귀환을 이끌었던 인물은 ( )이고, 가장 주된 사역은 ( )들에게 말씀 부흥운동을 일으키는 사역이었다.",
+                answers: ["에스라", "백성"]
+            },
+            {
+                id: 29,
+                question: "3차 포로 귀환을 이끌었던 인물은 ( )이고, 가장 주된 사역은 무너졌던 ( )을 재건하는 사역이었다.",
+                answers: ["느헤미야", "성벽"]
+            },
+            {
+                id: 30,
+                question: "포로 귀환 후 활동한 세 명의 선지자는 ( ), ( ), ( )이고, 그 후 예수님이 오시기까지 ( )년의 침묵기가 있었다.",
+                answers: ["학개", "스가랴", "말라기", "400"]
+            }
+        ];
+
+        // Correct for No.4 typo safely
+        quizData[3].answers[2] = "설교";
+
+        // Global Pool of potential distractors (wrong choices helper)
+        const allCorrectAnswers = Array.from(new Set(quizData.flatMap(q => q.answers)));
+        
+        // App State
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let solvedCount = 0; 
+        let selectedAnswers = []; // holds user selection for current blanks
+        let currentActiveBlankIndex = 0; // index of currently active blank selection
+
+        // Initializer
+        function startQuiz() {
+            shuffledQuestions = shuffleArray([...quizData]);
+            currentQuestionIndex = 0;
+            solvedCount = 0;
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            updateProgress();
+            showQuestion();
+        }
+
+        // Helper to shuffle arrays
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Show Current Question
+        function showQuestion() {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            selectedAnswers = new Array(currentQuestion.answers.length).fill(null);
+            currentActiveBlankIndex = 0;
+
+            // Update Header & Badge
+            document.getElementById('question-number-badge').textContent = `문제 #${currentQuestion.id}`;
+            document.getElementById('status-badge').className = "text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-600";
+            document.getElementById('status-badge').innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> 답변 작성 중`;
+
+            // Reset UI States
+            document.getElementById('options-section').classList.remove('hidden');
+            document.getElementById('feedback-section').classList.add('hidden');
+            document.getElementById('submit-btn').classList.remove('hidden');
+            document.getElementById('retry-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            // Construct interactive blanks
+            renderQuestionText();
+            renderChoices();
+        }
+
+        // Render the question statement with interactive blank tags
+        function renderQuestionText() {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const textParts = currentQuestion.question.split(/\(\s*\)/);
+            
+            let htmlContent = "";
+            for (let i = 0; i < textParts.length; i++) {
+                htmlContent += `<span>${textParts[i].replace(/\n/g, '<br>')}</span>`;
+                if (i < textParts.length - 1) {
+                    const isSelected = selectedAnswers[i] !== null;
+                    const isActive = i === currentActiveBlankIndex;
+                    
+                    let bgClass = "bg-slate-200 text-slate-700 border-dashed border-slate-400";
+                    if (isActive) {
+                        bgClass = "bg-blue-100 text-blue-700 border-solid border-blue-500 ring-2 ring-blue-400 animate-pulse";
+                    } else if (isSelected) {
+                        bgClass = "bg-indigo-50 text-indigo-700 border-solid border-indigo-400 font-bold";
+                    }
+
+                    htmlContent += `
+                        <button onclick="setActiveBlank(${i})" class="inline-flex items-center justify-center px-4 py-1.5 mx-1 my-1 rounded-xl border-2 text-base transition duration-150 transform hover:scale-105 active:scale-95 ${bgClass}">
+                            ${isSelected ? selectedAnswers[i] : `빈칸 ${i + 1}`}
+                        </button>
+                    `;
+                }
+            }
+            document.getElementById('question-text-container').innerHTML = htmlContent;
+        }
+
+        // Set which blank the user is currently choosing for
+        function setActiveBlank(index) {
+            currentActiveBlankIndex = index;
+            renderQuestionText();
+            renderChoices();
+        }
+
+        // Generate 4 dynamic multiple choices
+        function renderChoices() {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const correctAnswer = currentQuestion.answers[currentActiveBlankIndex];
+            
+            // Build distractors from the list of all correct answers (excluding the correct answer itself)
+            const distractors = allCorrectAnswers.filter(ans => ans !== correctAnswer);
+            const shuffledDistractors = shuffleArray([...distractors]);
+            
+            // Collect unique choices including correct answer
+            let choices = [correctAnswer];
+            for (let i = 0; i < shuffledDistractors.length && choices.length < 4; i++) {
+                if (!choices.includes(shuffledDistractors[i])) {
+                    choices.push(shuffledDistractors[i]);
+                }
+            }
+
+            // Fill with fallbacks if there aren't enough unique choices (rare)
+            const defaultFallbacks = ["구약", "율법", "계약", "역사"];
+            for (let i = 0; i < defaultFallbacks.length && choices.length < 4; i++) {
+                if (!choices.includes(defaultFallbacks[i])) {
+                    choices.push(defaultFallbacks[i]);
+                }
+            }
+
+            // Shuffle the final 4 choices
+            choices = shuffleArray(choices);
+
+            // Render option label and buttons
+            document.getElementById('active-blank-label').innerHTML = `
+                <span class="text-blue-600 font-bold">빈칸 [${currentActiveBlankIndex + 1}]</span>에 들어갈 단어를 아래에서 선택해 주세요:
+            `;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            choices.forEach((choice, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-4 px-5 text-left border-2 border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50 text-slate-800 font-medium rounded-2xl transition flex items-center justify-between group";
+                btn.onclick = () => selectChoice(choice);
+                btn.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-blue-100 group-hover:text-blue-600 text-slate-500 font-semibold text-sm flex items-center justify-center transition">
+                            ${idx + 1}
+                        </span>
+                        <span>${choice}</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-blue-400 transition"></i>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        // Action when user selects an option
+        function selectChoice(value) {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            selectedAnswers[currentActiveBlankIndex] = value;
+            
+            // Auto advance to the next empty blank, if any
+            let nextEmpty = -1;
+            for (let i = 0; i < selectedAnswers.length; i++) {
+                if (selectedAnswers[i] === null) {
+                    nextEmpty = i;
+                    break;
+                }
+            }
+
+            if (nextEmpty !== -1) {
+                currentActiveBlankIndex = nextEmpty;
+            } else {
+                // All filled, wrap around to first or keep current (let user preview)
+            }
+
+            renderQuestionText();
+            renderChoices();
+        }
+
+        // Validate submission
+        function checkAnswers() {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            
+            // Prevent validation if any blank is unanswered
+            if (selectedAnswers.includes(null)) {
+                showToastFeedback("모든 빈칸의 알맞은 답안을 선택해주셔야 제출할 수 있습니다.", "error");
+                return;
+            }
+
+            let isAllCorrect = true;
+            for (let i = 0; i < currentQuestion.answers.length; i++) {
+                if (selectedAnswers[i] !== currentQuestion.answers[i]) {
+                    isAllCorrect = false;
+                    break;
+                }
+            }
+
+            const feedback = document.getElementById('feedback-section');
+            const badge = document.getElementById('status-badge');
+            
+            feedback.classList.remove('hidden');
+            document.getElementById('options-section').classList.add('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+
+            if (isAllCorrect) {
+                // Success State
+                badge.className = "text-xs font-semibold px-2.5 py-1 rounded bg-emerald-100 text-emerald-700";
+                badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> 정답 확인 완료`;
+
+                feedback.className = "mt-6 p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-center";
+                feedback.innerHTML = `
+                    <div class="text-xl font-black mb-1"><i class="fa-regular fa-face-smile mr-1"></i> 참 잘하셨습니다!</div>
+                    <div class="text-sm font-normal text-emerald-600">모든 빈칸의 정답을 완벽하게 맞추셨습니다.</div>
+                `;
+
+                document.getElementById('next-btn').classList.remove('hidden');
+                solvedCount++;
+                updateProgress();
+            } else {
+                // Failure State
+                badge.className = "text-xs font-semibold px-2.5 py-1 rounded bg-rose-100 text-rose-700";
+                badge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> 오답 발생`;
+
+                feedback.className = "mt-6 p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-center";
+                
+                // Show user which blanks are correct and which are wrong
+                let answerReviewHtml = `<div class="text-xl font-black mb-2"><i class="fa-regular fa-face-frown mr-1"></i> 틀린 부분이 있습니다!</div>`;
+                answerReviewHtml += `<div class="grid grid-cols-1 gap-1.5 text-left text-sm font-normal max-w-sm mx-auto">`;
+                
+                for (let i = 0; i < currentQuestion.answers.length; i++) {
+                    const userVal = selectedAnswers[i];
+                    const correctVal = currentQuestion.answers[i];
+                    const isCorrect = userVal === correctVal;
+                    
+                    answerReviewHtml += `
+                        <div class="flex items-center justify-between p-1.5 border-b border-rose-100">
+                            <span>빈칸 ${i + 1}: <span class="font-bold text-gray-700">${userVal}</span></span>
+                            <span>
+                                ${isCorrect 
+                                    ? `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> 정답</span>` 
+                                    : `<span class="text-rose-600 font-bold"><i class="fa-solid fa-xmark"></i> 오답 (정답: <strong>${correctVal}</strong>)</span>`}
+                            </span>
+                        </div>`;
+                }
+                answerReviewHtml += `</div>`;
+                feedback.innerHTML = answerReviewHtml;
+
+                document.getElementById('retry-btn').classList.remove('hidden');
+            }
+        }
+
+        // Retry the exact same question
+        function retryQuestion() {
+            showQuestion();
+        }
+
+        // Proceed to Next Question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion();
+            } else {
+                showFinalResult();
+            }
+        }
+
+        // Show Final Screen
+        function showFinalResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+        }
+
+        // Progress Handler
+        function updateProgress() {
+            const percent = (solvedCount / 30) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-text').textContent = `진행도: ${solvedCount} / 30`;
+            document.getElementById('score-text').textContent = `맞춘 문제: ${solvedCount}개`;
+        }
+
+        // Reset Quiz State
+        function resetQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        // Compact Toast Message Helper
+        function showToastFeedback(message, type = "success") {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-xl text-white text-sm font-semibold transition duration-300 z-50 ${
+                type === "error" ? "bg-rose-600" : "bg-slate-800"
+            }`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1.5"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
